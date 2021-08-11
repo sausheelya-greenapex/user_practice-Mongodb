@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :get_user,only: [:show]
+  before_action :get_user,only: [:show,:delete]
 
   def index
      @user = User.all
@@ -12,16 +12,12 @@ class UsersController < ApplicationController
 
 
   def show
-    if params[:user_id].present?
-      @user = User.find_by_id(params[:user_id])
       if @user
          render :json=> {code:200,message:"Success",data:@user.as_json}
       else
          render :json=> {code:200,message:"User does not Exist",data:nil}
       end
-    else
-      rende :json=> {code:301,message:"User Id must be present",data:nil}
-    end
+   
   end
 
   def create
@@ -34,8 +30,6 @@ class UsersController < ApplicationController
   end
 
   def delete
-    if params[:user_id].present?
-      @user = User.find_by_id(params[:user_id])
         if @user
          @user.delete
          render :json=> {code:200,message:"Success",data:""}
@@ -43,9 +37,8 @@ class UsersController < ApplicationController
             render :json=> {code:200,message:"User does not Exist",data:nil}
 
         end    
-        else
-           render :json=> {code:301,message:"User Id must be present",data:nil}
-        end
+    
+        
   end
 
   def search
