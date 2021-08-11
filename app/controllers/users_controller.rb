@@ -1,15 +1,17 @@
 class UsersController < ApplicationController
-  def get_users
+  before_action :get_user,only: [:show]
+
+  def index
      @user = User.all
       if @user
-        render :json=> {code:200,message:"Success",data:@user.as_json}
-      else
-       render :json=> {code:201,message:"No User Found",data:nil}
-      end
+       render :json=> {code:200,message:"Success",data:@user.as_json}
+    else
+      render :json=> {code:201,message:"No User Found",data:nil}
+    end
   end
 
 
-  def user_by_id
+  def show
     if params[:user_id].present?
       @user = User.find_by_id(params[:user_id])
       if @user
@@ -22,7 +24,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def create_user
+  def create
     if params[:first_name].present? and params[:last_name].present? and params[:email].present?
       @user = User,create(first_name:params[:first_name],last_name:params[:last_name],email:params[:email])
        render :json=> {code:200,message:"Success",data:@user.as_json}
@@ -31,7 +33,7 @@ class UsersController < ApplicationController
       end
   end
 
-  def delete_user
+  def delete
     if params[:user_id].present?
       @user = User.find_by_id(params[:user_id])
         if @user
@@ -44,5 +46,20 @@ class UsersController < ApplicationController
         else
            render :json=> {code:301,message:"User Id must be present",data:nil}
         end
+  end
+
+  def search
+    if params[:keyword].present?
+      @user = User.where("first_name =? or email=? or last_name=? ",params[:keyword],params[:keyword],params[:keyword])
+      render :json=> {code:200,message:"Success",data:@user.as_json}
+    else
+      render :json=> {code:200,message:"Please Provide Valid parameter",data:nil}
+    end
+  end
+
+  private
+   def get_user
+       @user = User.find_by_id(params[:user_id])
    end
+
 end
